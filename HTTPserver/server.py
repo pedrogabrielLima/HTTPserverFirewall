@@ -1,9 +1,9 @@
 import socket
 #import base64
 
-h = open('raiz/index.htm', 'r')
+h = open('raiz/index.html', 'r')
 homepage = h.read()
-i= open('paginateste.html', 'r')
+i= open('blocked.html', 'r')
 paginaIpForadaLista = i.read()
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print("-------------------------------------")
@@ -21,7 +21,7 @@ try:
     while True:
         ws, addr = server.accept()
         data = ws.recv(2000)
-        
+
         P = data.split(b' ') #GET / HTTP/1.0 -> [GET, /, HTTP/1.0]
         print("Printando data: ",P)
         if(addr[0] == "192.168.1.4"):
@@ -38,7 +38,7 @@ try:
                     # ext = str(P[1].rpartition(b'.')[-1])
                     # f = open(P[1][1:], 'rb')
                     # figure = f.read()
-                    
+
                     # ws.sendall('HTTP/1.0 200 OK\r\n' +
                                 # 'Content-Type: image' + ext + '\r\n' +
                                 # 'Content-Length: ' + str(len(figure)) + '\r\n\r\n' +
