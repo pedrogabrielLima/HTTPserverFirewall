@@ -1,27 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/src/css/bstyle.css">
-        <link rel="shortcut icon" href="/src/helpers/Boto.svg" />
-        <title>Bloqueado</title>
-    </head>
-    <body>
-        <main>
-            <div class="announce">
-                <img src="/src/helpers/Boto.svg" alt="Boto" class="announce-logo">
-                <div class="announce-text">
-                    <h1>IP Bloqueado</h1>
-                    <h2>
-                        Opa amigo,<br>
-                        parece que você não tem<br>
-                        permisões necessárias para<br>
-                        acessar esse site.
-                    </h2>
-                </div>
-            </div>
-        </main>
-    </body>
+<html>
+<head>
+<TITLE> Links Mais usados </TITLE>
+<meta charset="UTF-8">
+</head>
+<body>
+<body TEXT="#000000">
+<body BGCOLOR="#ffffff">
+<div ALIGN="CENTER">
+
+<h1>IP</h1>
+<ul id="ipAdress"></ul>
+
+<script>
+    const ul = document.getElementById("ipAdress");
+    const api = /*URL da API usado*/;
+
+    function createNode(element){
+        return document.createElement(element);
+    }
+
+    function append(parent, element){
+        return parent.appendChild(element);
+    }
+    
+    fetch(api).then((response) => response.json()).then(function (data){
+        let ip = data.results;
+        return ip.map(function(ip){
+            let li = createNode('li');
+            let ip = createNode('ip');
+            ip.innerHTML = /*Localização do cara*/;
+            
+            append(li, ip)
+            append(ul, li)
+    })
+}).catch(function(error){
+    console.log(error);
+});
+</script>
+
+<p>TEU IP TA BLOQUEADO BOY</p>
+
+</body>
 </html>
