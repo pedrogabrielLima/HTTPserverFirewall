@@ -14,17 +14,22 @@ class Request():
 
 
     def builder(http_post):
+        print('PRINTANDO HTTP POST:', http_post)
+        print('PRINTANDO TIPO HTTP POST:', type(http_post))
         req_line = re.compile(r'(?P<method>GET|POST)\s+(?P<resource>.+?)\s+(?P<version>HTTP/1.1)')
         field_line = re.compile(r'\s*(?P<key>.+\S)\s*:\s+(?P<value>.+\S)\s*')
         first_line_end = http_post.find('\n')
         headers_end = http_post.find('\r\n\r\n')
         request = req_line.match(
             http_post[:first_line_end]
-        ).groupdict()
+        )
         headers = dict(
             field_line.findall(
                 http_post[first_line_end:headers_end]
             )
         )
+        size=len(http_post)
+        print('REQUEST CLASSE TIPO:', type(request))
+        print('LIST LAST ELEM: ', http_post[size-2])
         body = http_post[headers_end + 2:]
         return Request(request["method"], request["resource"], headers, body)

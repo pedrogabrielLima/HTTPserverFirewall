@@ -10,7 +10,26 @@
 <body BGCOLOR="#ffffff">
 <div ALIGN="CENTER">
 
-<h1>IP</h1>
-<p id="mensagem">TEU IP TA BLOQUEADO BOY</p>
+<h1 id="ip">SEU IP</h1>
+<h2 id="mensagem">ESTÁ BLOQUEADO POR TEMPO INDETERMINADO</h2>
+<script>
+    var back_response = 'blank';
+    function sync() {
+        
+        var message = ''
+        
+        switch (back_response.split(',')[0]) {
+            case 'user_remove': message = back_response.split(',')[1]; break;
+            case 'already_added': message = 'IP já presente na lista'; break;
+            case 'ip_changed': message= 'O ip foi trocado'; break;
+            default: message = 'ALA O ERRO'
+        }
+        document.getElementById('ip').innerText = "ESTE IP: " + message;
+        document.getElementById('mensagem').style.color = 'red';
+    }
+        fetch('/remove_ip', {method: 'GET'})
+        .then((response) => response.text())
+        .then(resp => {back_response = resp; sync();});
+</script>
 </body>
 </html>

@@ -10,9 +10,9 @@
 <body BGCOLOR="#ffffff">
 <div ALIGN="CENTER">
 
-<h1>BEM VINDO</h1>
+<h1>TUX FIREWALL</h1>
 <ul id="ipAdress"></ul>
-<p id="mensagem">MENSAGEM DE BOAS VINDAS</p>
+<p id="mensagem">SEJA BEM VINDO AO FIREWALL</p>
 <form id= 'myForm' onsubmit="sendIp()">
     <input id="ip_user" type="text">
     <button id="ip" type="submit">Clica aqui</button>
@@ -22,20 +22,18 @@
     function handleForm(event) { event.preventDefault(); } 
     form.addEventListener('submit', handleForm);
     const ul = document.getElementById("ipAdress");
-    const url = '/pathNaoExistente';
-    var state = 'blank';    
-    function updateState() {
+    var state = 'blank'; 
+    //sincronizacao de estados   
+    function sync() {
         var message = ''
         switch (state) {
             case 'aqui': message = 'Lascou'; break;
             case 'blank': message = 'O jacare nadou papai'; break;
-            case 'ip_changed': message= 'O ip foi trocado'; break;
+            case 'user_added': message= 'IP adicionado com Sucesso!'; break;
             default: message = 'ALA O ERRO'
         }
-        document.getElementById('mensagem').innerText = message;
-        if(state == 'blank'){
-            fetch(url).then((response) => response.text()).then(resp => {state = resp; updateState();})
-        }
+        document.getElementById('ipAdress').innerText = message;
+        document.getElementById('ipAdress').style.color = 'red';
     }
         
     function sendIp(){
@@ -43,7 +41,7 @@
         console.log('IP usuario',ip);
         fetch('/add_user_ip', {method: 'POST', body:  ip})
         .then((response) => response.text())
-        .then(resp => {state = resp; updateState();});
+        .then(resp => {state = resp; sync();});
     }
 </script>
 </body>
