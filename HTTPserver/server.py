@@ -1,3 +1,4 @@
+import re
 import socket
 import os
 from request import Request
@@ -13,8 +14,6 @@ request_data = ''
 
 #le os arquivos no server
 def readFile(file_name):
-    print('FILE NAME', file_name)
-    print('FILE NAME TYPE', type(file_name))
     if file_name in fileDic.keys():
         path= fileDic[file_name]
         i= open(path, 'r', encoding="utf-8")
@@ -53,6 +52,14 @@ def tratarStringBody(requestBody):
     else:
         print('NAO VEIO FORMATO STRING NO REQUEST BODY')
 
+def checkIP(ip):
+    pattern = r'(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
+    if re.match(pattern, ip):
+        return True
+    else:
+        return False
+
+
 try:
     abs_path = os.getcwd()
     getAllFiles(abs_path)
@@ -78,6 +85,7 @@ try:
         #print('Imprimindo data: ', request_data)
         #print('==============================')
         if request_data.method == 'GET':
+            print('IP de quem chega: ', web_socket.getpeername()[0])
             correlation_paths = list(filter(lambda filename : filename==request_data.path.replace('/',''), fileDic.keys()))
             if request_data.path.replace('/', '') in states_list:
                 if request_data.path.replace('/', '') == 'add_user_ip':
@@ -96,14 +104,18 @@ try:
         elif request_data.method== 'POST':
             if request_data.path.replace('/', '') in states_list:
                 if request_data.path.replace('/', '') == 'add_user_ip':
-                    if tratarStringBody(request_data.body) in ip_list:
-                        print('IP:{} JA EXISTENTE NA LISTA'.format(request_data.body))
-                        send_message(web_socket, 'text/plain', str.encode('already_added'))
+                    if checkIP(tratarStringBody(request_data.body)) == True:
+                        if tratarStringBody(request_data.body) in ip_list:
+                            print('IP:{} JA EXISTENTE NA LISTA'.format(request_data.body))
+                            send_message(web_socket, 'text/plain', str.encode('already_added'))
+                        else:
+                            send_message(web_socket, 'text/plain', str.encode('user_added'))
+                            ip_list.append(tratarStringBody(request_data.body))
+                            indiceUltimoIP=len(ip_list)
+                            print('Ultimo IP cadastrado: ', ip_list[indiceUltimoIP-1])
                     else:
-                        send_message(web_socket, 'text/plain', str.encode('user_added'))
-                        ip_list.append(tratarStringBody(request_data.body))
-                        indiceUltimoIP=len(ip_list)
-                        print('Ultimo IP cadastrado: ', ip_list[indiceUltimoIP-1])
+                        print('IP CAIU NA VERIFICACAO DE REGEX')
+                        send_message(web_socket, 'text/plain', str.encode('regex_failure'))
                 elif request_data.path.replace('/', '') == 'remove_ip':
                     send_message(web_socket, 'text/plain', str.encode('user_removed'))
                 elif request_data.path.replace('/', '') == 'ip_prefix':
