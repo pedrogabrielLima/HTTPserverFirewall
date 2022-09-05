@@ -16,15 +16,15 @@
     var back_response = 'blank';
     function sync() {
         
-        var message = ''
+        var retorno = ''
         
         switch (back_response.split(',')[0]) {
-            case 'user_remove': message = back_response.split(',')[1]; break;
-            case 'already_added': message = 'IP já presente na lista'; break;
-            case 'ip_changed': message= 'O ip foi trocado'; break;
-            default: message = 'ALA O ERRO'
+            case 'user_remove': retorno = back_response.split(',')[1]; break;
+            case 'already_added': retorno = 'IP já presente na lista'; break;
+            case 'ip_changed': retorno= 'O ip foi trocado'; break;
+            default: retorno = 'ALA O ERRO'
         }
-        document.getElementById('ip').innerText = "ESTE IP: " + message;
+        document.getElementById('ip').innerText = "ESTE IP: " + retorno;
         document.getElementById('mensagem').style.color = 'red';
     }
         fetch('/remove_ip', {method: 'GET'})

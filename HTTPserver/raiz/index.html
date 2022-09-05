@@ -15,7 +15,7 @@
 <p id="mensagem">SEJA BEM VINDO AO FIREWALL</p>
 <form id= 'myForm' onsubmit="sendIp()">
     <input id="ip_user" type="text">
-    <button id="ip" type="submit">Clica aqui</button>
+    <button id="ip" type="submit">Adicionar IP</button>
 </form>
 <script>
     var form = document.getElementById("myForm");
@@ -25,14 +25,14 @@
     var state = 'blank'; 
     //sincronizacao de estados   
     function sync() {
-        var message = ''
+        var retorno = ''
         switch (state) {
-            case 'aqui': message = 'Lascou'; break;
-            case 'blank': message = 'O jacare nadou papai'; break;
-            case 'user_added': message= 'IP adicionado com Sucesso!'; break;
-            default: message = 'ALA O ERRO'
+            case 'aqui': retorno = 'Lascou'; break;
+            case 'blank': retorno = 'O jacare nadou'; break;
+            case 'user_added': retorno= 'IP adicionado com Sucesso!'; break;
+            default: retorno = 'IP JÁ CADASTRADO'
         }
-        document.getElementById('ipAdress').innerText = message;
+        document.getElementById('ipAdress').innerText = retorno;
         document.getElementById('ipAdress').style.color = 'red';
     }
         

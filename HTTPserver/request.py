@@ -28,8 +28,9 @@ class Request():
                 http_post[first_line_end:headers_end]
             )
         )
-        size=len(http_post)
-        print('REQUEST CLASSE TIPO:', type(request))
-        print('LIST LAST ELEM: ', http_post[size-2])
         body = http_post[headers_end + 2:]
+        print('------------------------------')
+        print('Printando as quatro variaveis:')
+        print(request["method"], request["resource"], headers, type(body))
+        print('------------------------------')
         return Request(request["method"], request["resource"], headers, body)
