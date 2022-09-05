@@ -6,7 +6,7 @@ from request import Request
 h = open('raiz/notFound.html', 'r')
 notfound = h.read()
 
-states_list=['add_user_ip','remove_ip','ip_prefix','port']
+states_list=['already_added','add_user_ip','remove_ip','ip_prefix','port', 'regex_failure']
 ip_list=['127.0.0.1', '192.168.1.10']
 fileDic = {}
 request_data = ''
