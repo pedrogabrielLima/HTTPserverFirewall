@@ -6,10 +6,12 @@ from request import Request
 h = open('raiz/notFound.html', 'r')
 notfound = h.read()
 
+#lista de estados possiveis para enviar e receber
 states_list=['already_added','add_user_ip','remove_ip','ip_prefix','port', 'regex_failure']
 ip_list=['127.0.0.1', '192.168.1.10']
 fileDic = {}
 request_data = ''
+ip_fixo='192.168.1.10'
 
 
 #le os arquivos no server
@@ -40,11 +42,13 @@ def loadHtml(web_socket, path, ip_do_cara):
     send_message(web_socket,'text/html', response)
 
 
+#envia para a pagina
 def send_message(web_socket, content_type, response):
     resp = f'HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {len(response)}\r\n\r\n'
     web_socket.sendall(str.encode(resp) + response)
 
 
+#trata o body da request, que no caso, geralmente é o IP
 def tratarStringBody(requestBody):
     if requestBody != None and type(requestBody) == str:
         a = requestBody.strip()
@@ -52,6 +56,8 @@ def tratarStringBody(requestBody):
     else:
         print('NAO VEIO FORMATO STRING NO REQUEST BODY')
 
+
+#checa se o IP está no formato IPV4 correto usando regex
 def checkIP(ip):
     pattern = r'(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
     if re.match(pattern, ip):
@@ -80,31 +86,45 @@ try:
             print('VEIO NULO')
         else:
             request_data=Request.builder(websocket_decoder)
-        #print('==============================')
-        #print('Imprimindo tipoRequest: ', type(request_data))
-        #print('Imprimindo data: ', request_data)
-        #print('==============================')
+
+        #este if testa se o metodo recebido eh um GET    
         if request_data.method == 'GET':
             print('IP de quem chega: ', web_socket.getpeername()[0])
-            correlation_paths = list(filter(lambda filename : filename==request_data.path.replace('/',''), fileDic.keys()))
+            correlation_paths = list(filter(lambda filename: filename==request_data.path.replace('/',''), fileDic.keys()))
+            #print('FileDic: ', fileDic)
+            #print('CORRELATION', correlation_paths)
+            #print('Request Path', request_data.path)
+            #este if checa se o que foi digitado apos a barra "/" é um estado ou um arquivo
+            print('Printando Path', request_data.path.replace('/', ''))
             if request_data.path.replace('/', '') in states_list:
+                #se estiver dentro da lista de estados possiveis, é pq n é um arquivo
                 if request_data.path.replace('/', '') == 'add_user_ip':
                     send_message(web_socket, 'text/plain', str.encode('user_added'))
+                    print('ADICIONOU NO GET')
                 elif request_data.path.replace('/', '') == 'remove_ip':
                     send_message(web_socket, 'text/plain', str.encode('user_remove'+','+ip_do_usuario))
                 elif request_data.path.replace('/', '') == 'ip_prefix':
                     send_message(web_socket, 'text/plain', str.encode('user_remove'+','+ip_do_usuario))
                 else:
                     send_message(web_socket, 'text/plain', str.encode('dont_care'))
-            
+            #Checa se o que foi passado nao está no dicionário de arquivos e se é maior que 0
             if correlation_paths not in states_list and len(correlation_paths) > 0:
+                #se for maior que zero, carrega o arquivo presente no dicionario
                 loadHtml(web_socket, correlation_paths[0], ip_do_usuario)
             else:
+                #se n for maior que zero, ou seja, se veio vazio, carrega o notFound
+                #exemplo é se apenas digitar ip:8080, sem especificar diretorio
                 loadHtml(web_socket, 'notFound', ip_do_usuario)
+        #else que checa se veio um POST
         elif request_data.method== 'POST':
             if request_data.path.replace('/', '') in states_list:
+                #se o que foi passado pelo JS no fetch foi o "add_user_ip"
                 if request_data.path.replace('/', '') == 'add_user_ip':
+                    #se foi, checa se o valor passado é um IP mesmo, na regex
+                    #Isso evita xss e outros ataques
                     if checkIP(tratarStringBody(request_data.body)) == True:
+                        #Se o ip passado estiver na lista, aí nao adiciona ele e retorna um
+                        #estado chamado "already_added"
                         if tratarStringBody(request_data.body) in ip_list:
                             print('IP:{} JA EXISTENTE NA LISTA'.format(request_data.body))
                             send_message(web_socket, 'text/plain', str.encode('already_added'))
@@ -113,11 +133,26 @@ try:
                             ip_list.append(tratarStringBody(request_data.body))
                             indiceUltimoIP=len(ip_list)
                             print('Ultimo IP cadastrado: ', ip_list[indiceUltimoIP-1])
+                    #se o valor passado for incompátivel com a regex de IPV4, volta um
+                    # estado de falha "regex_failure"        
                     else:
-                        print('IP CAIU NA VERIFICACAO DE REGEX')
+                        print('ERRO: IP ADICIONADO CAIU NA VERIFICACAO DE REGEX')
                         send_message(web_socket, 'text/plain', str.encode('regex_failure'))
                 elif request_data.path.replace('/', '') == 'remove_ip':
-                    send_message(web_socket, 'text/plain', str.encode('user_removed'))
+                    if checkIP(tratarStringBody(request_data.body)) == True:
+                        #Se o ip passado estiver na lista, ele e retorna um
+                        #estado chamado "ip_removed" para o front
+                        if tratarStringBody(request_data.body) in ip_list:
+                            if tratarStringBody(request_data.body) != ip_fixo:
+                                print('IP:{} REMOVIDO DA LISTA'.format(request_data.body))
+                                send_message(web_socket, 'text/plain', str.encode('ip_removed'))
+                                ip_list.remove(tratarStringBody(request_data.body))
+                            else:
+                                print('IP 192.168.1.10 nao pode ser removido')
+                                send_message(web_socket, 'text/plain', str.encode('ip_master_plus'))
+                    else:
+                        print('ERRO: IP REMOVIDO CAIU NA VERIFICACAO DE REGEX')
+                        send_message(web_socket, 'text/plain', str.encode('regex_failure'))
                 elif request_data.path.replace('/', '') == 'ip_prefix':
                     send_message(web_socket, 'text/plain', str.encode('banned_prefix'))
                 else:

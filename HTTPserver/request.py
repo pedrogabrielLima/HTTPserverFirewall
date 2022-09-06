@@ -14,8 +14,6 @@ class Request():
 
 
     def builder(http_post):
-        print('PRINTANDO HTTP POST:', http_post)
-        print('PRINTANDO TIPO HTTP POST:', type(http_post))
         req_line = re.compile(r'(?P<method>GET|POST)\s+(?P<resource>.+?)\s+(?P<version>HTTP/1.1)')
         field_line = re.compile(r'\s*(?P<key>.+\S)\s*:\s+(?P<value>.+\S)\s*')
         first_line_end = http_post.find('\n')
@@ -29,8 +27,4 @@ class Request():
             )
         )
         body = http_post[headers_end + 2:]
-        print('------------------------------')
-        print('Printando as quatro variaveis:')
-        print(request["method"], request["resource"], headers, type(body))
-        print('------------------------------')
         return Request(request["method"], request["resource"], headers, body)
