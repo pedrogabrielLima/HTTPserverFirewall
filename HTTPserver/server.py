@@ -18,12 +18,12 @@ header_ = ('HTTP/1.1 {num_plus_resp}\r\n'
 h = open('raiz/notFound.html', 'r')
 notfound = h.read()
 
-states_list = ['add_user_ip', 'remove_ip', 'ip_prefix', 'port']
-ip_list = ['127.0.0.1', '192.168.1.10']
+states_list = ['add_user_ip', 'remove_ip', 'ip_prefix', 'port', 'get_ip_list']
+ip_list = ['127.0.0.1', '192.168.1.10', '192.168.15.1']
 # Cria um set de arquivos
 fileDic = {}
 request_data = ''
-ip_fixo = '192.168.1.10'
+ip_fixo = ['192.168.1.10', '127.0.0.1']
 
 
 #le os arquivos no server
@@ -119,6 +119,15 @@ try:
                     resp = ('user_remove' + ',' + ip_do_usuario)
                 elif request_data.path.replace('/', '') == ('get_ip_list'):
                     resp = ('ip_list' + ',' + ",".join(ip_list))
+
+                # elif request_data.path.replace('/','') == ('get_ip_authority'):
+                #     if (tratarStringBody(request_data.body)) in ip_list:
+                #         if (tratarStringBody(request_data.body)) in ip_fixo:
+                #             resp = 'is_Master'
+                #         else:
+                #             resp = 'is_Authorized'
+                #     else:
+                #         resp = 'is_Removed'
                 send_message(web_socket, 'text/plain', resp.encode())
 
             #Checa se o que foi passado nao está no dicionário de arquivos e se é maior que 0
@@ -183,9 +192,22 @@ try:
                 elif request_data.path.replace('/', '') == 'ip_prefix':
                     send_message(web_socket, 'text/plain',
                                  str.encode('banned_prefix'))
-                elif request_data.path.replace('/', '') == 'get_ip_list':
-                    send_message(web_socket, 'text/plain',
-                                 str.encode('ip_list'))
+
+                # elif request_data.path.replace('/',
+                #                                '') == ('get_ip_authority'):
+                #     if (checkIP(tratarStringBody(request_data.body))):
+                #         if (tratarStringBody(request_data.body)) in ip_list:
+                #             if (tratarStringBody(
+                #                     request_data.body)) in ip_fixo:
+                #                 send_message(web_socket, 'text/plain',
+                #                              str.encode('is_Master'))
+                #             else:
+                #                 send_message(web_socket, 'text/plain',
+                #                              str.encode('is_Authorized'))
+                #         else:
+                #             send_message(web_socket, 'text/plain',
+                #                          str.encode('is_Removed'))
+
                 else:
                     send_message(web_socket, 'text/plain',
                                  str.encode('dont_care'))
