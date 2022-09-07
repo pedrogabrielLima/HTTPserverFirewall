@@ -1,100 +1,333 @@
 <!DOCTYPE html>
-<html>
-<head>
-<TITLE> Links Mais usados </TITLE>
-<meta charset="UTF-8">
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-</head>
-<body>
-<body TEXT="#000000">
-<body BGCOLOR="#ffffff">
-<div ALIGN="CENTER">
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- <link rel="stylesheet" href="css/style.css"> -->
+        <title>TUX FIREWALL</title>
+        <style>
+            @import url(https://fonts.googleapis.com/css2?family=Inika:wght@400;700&family=Inter:wght@400;500&display=swap);
 
-<h1>TUX FIREWALL</h1>
-<ul id="ipAdress"></ul>
-<p id="mensagem">SEJA BEM VINDO AO FIREWALL</p>
-<form id= 'myForm' onsubmit="sendIp()">
-    <input id="ip_user" type="text">
-    <button id="ip" type="submit">Adicionar IPV4</button>
-</form>
-<form id= 'remove_form' onsubmit="removeIp()">
-    <input id="remove_ip" type="text">
-    <button id="ip" type="submit">Remover IPV4</button>
-</form>
-<div>
-    <ul id="lista">
-        LISTA DE IPs cadastrados:
-    </ul>
-</div>
-<script>
-    var form = document.getElementById("myForm");
-    var remove_form = document.getElementById("remove_form");
-    function handleForm(event) { event.preventDefault(); } 
-    form.addEventListener('submit', handleForm);
-    remove_form.addEventListener('submit', handleForm);
-    const ul = document.getElementById("ipAdress");
-    var state = 'blank'; 
-    var ipdigitado = ''
-    console.log('IP digitado: ', ipdigitado)
+            :root {
+                --background-color: #f9f9f9;
+                --title-color: #171717;
+                --search-bar-color: #f1f1f1;
+                --active-color: #535353;
+                --inactive-color: #a9a9a9;
+            }
 
-    function already_added(){
-        var emenda ="Erro: IP " + ipdigitado+ " JÁ CADASTRADO";
-        document.getElementById('ipAdress').innerText = emenda;
-        document.getElementById('ipAdress').style.color = 'red'; 
-    }
-    function user_added(){
-        var emenda ="IP: " + ipdigitado+ " Cadastrado com sucesso";
-        document.getElementById('ipAdress').innerText = emenda;
-        document.getElementById('ipAdress').style.color = 'red'; 
-    }
-    function regex_failure(){
-        var emenda ="IP " + ipdigitado+ " não é válido";
-        document.getElementById('ipAdress').innerText = emenda;
-        document.getElementById('ipAdress').style.color = 'red'; 
-        if(ipdigitado.includes("<script>") == true)
-            alert('NEM TENTE QUE NÃO CONSEGUE')
-    }
-    function ip_removed(){
-        var emenda ="IP " + ipdigitado+ " REMOVIDO com sucesso";
-        document.getElementById('ipAdress').innerText = emenda;
-        document.getElementById('ipAdress').style.color = 'red'; 
-    }
-    function ip_master_plus(){
-        var emenda ="IP " + ipdigitado+ " NAO PODE SER REMOVIDO";
-        document.getElementById('ipAdress').innerText = emenda;
-        document.getElementById('ipAdress').style.color = 'red'; 
-    }
-    //sincronizacao de estados   
-    function sync() {
-        var retorno = ''
-        switch (state) {
-            case 'ip_removed': ip_removed(); break;
-            case 'blank': retorno = 'O jacare nadou'; break;
-            case 'user_added': user_added(); break;
-            case 'already_added': already_added(); break;
-            case 'regex_failure': regex_failure(); break;
-            case 'ip_master_plus': ip_master_plus(); break;
-            case 'banned_prefix': retorno= 'Possui formato inválido'; break;
-            default: retorno = 'DEU RUIM'
-        }   
-    }
-        
-    function sendIp(){
-        ip = document.getElementById('ip_user').value;
-        ipdigitado = ip;
-        console.log('IP usuario',ip);
-        fetch('/add_user_ip', {method: 'POST', body:  ip})
-        .then((response) => response.text())
-        .then(resp => {state = resp; sync();});
-    }
-    function removeIp(){
-        ip = document.getElementById('remove_ip').value;
-        ipdigitado = ip;
-        console.log('IP usuario',ip);
-        fetch('/remove_ip', {method: 'POST', body:  ip})
-        .then((response) => response.text())
-        .then(resp => {state = resp; sync();});
-    }
-</script>
-</body>
+            .dark-theme {
+                --background-color: #202020;
+                --title-color: #f1f1f1;
+                --search-bar-color: #171717;
+                --active-color: #fff;
+                --inactive-color: #818181;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                height: 100%;
+            }
+
+            body {
+                background: var(--background-color);
+                font-family: 'Inter', sans-serif;
+            }
+
+            .content {
+                display: flex;
+                flex: auto;
+                flex-direction: column;
+                padding: auto;
+                padding-top: 6.25rem;
+                align-items: center;
+            }
+
+            .container {
+                width: 100%;
+                padding: 10%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .logo {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                justify-content: center;
+                padding: 3.44rem 0.5rem 0;
+            }
+
+            .logo h1 {
+                color: var(--title-color);
+                font-family: 'Inika', serif;
+                font-weight: 700;
+                font-size: 3.125rem;
+                padding: 0.625rem;
+            }
+
+            .logo h2 {
+                color: var(--title-color);
+                font-family: 'Inika', serif;
+                font-weight: 700;
+                font-size: 1.25rem;
+                padding: 0 0 0 0.625rem;
+            }
+
+            .searchBar {
+                width: 100%;
+                max-width: 720px;
+                background: var(--search-bar-color);
+                display: flex;
+                align-items: center;
+                border-radius: 0.3125rem;
+                padding: 0.625rem 1.25rem;
+            }
+
+            .searchBar input {
+                background: transparent;
+                flex: 1;
+                border: none;
+                outline: none;
+                padding: 0.75rem 0.625rem;
+                font-size: 1.5rem;
+                color: var(--active-color);
+
+            }
+
+            .searchBar button {
+                border: 0;
+                border-radius: 50%;
+                width: 3.125rem;
+                height: 3.125rem;
+                cursor: pointer;
+                background-color: transparent;
+            }
+
+            .searchBar button svg {
+                width: 32px;
+                fill: var(--active-color);
+            }
+
+            .searchBar button:disabled svg,
+            .seachBar button[disabled] svg {
+                fill: var(--inactive-color);
+            }
+
+            ::placeholder {
+                color: var(--inactive-color);
+            }
+
+            table {
+                border-collapse: collapse;
+                box-shadow: 0 5px 10px #e1e5ee;
+                background-color: white;
+                text-align: left;
+                overflow: hidden;
+            }
+
+            thead {
+                box-shadow: 0 5px 10px #e1e5ee;
+            }
+
+            th {
+                padding: 1rem 2rem;
+                text-transform: uppercase;
+                letter-spacing: 0.1rem;
+                font-size: 0.7rem;
+                font-weight: 900;
+            }
+
+            td {
+                padding: 1rem 2rem;
+            }
+
+            .status {
+                border-radius: 0.2rem;
+                background-color: red;
+                padding: 0.2rem 1rem;
+                text-align: center;
+            }
+
+
+            .status-master {
+                background-color: #fff0c2;
+                color: #a68b00;
+            }
+
+            .status-auth {
+                background-color: #c8e6c9;
+                color: #388e3c;
+            }
+
+            .status-removed {
+                background-color: #ffcdd2;
+                color: #c62828;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <main class="content">
+            <div class="logo">
+                <h1>TUX FIREWALL</h1>
+                <h2>Seja Bem vindo ao Firewall</h2>
+            </div>
+            <div class="container">
+                <form id="myForm" class="searchBar" onsubmit="sendIp()">
+                    <input id="ip_user" type="ip" class="searchCamp" placeholder="0.0.0.0">
+                    <button id="ip" type="submit" class="searchButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M 11 2 L 11 11 L 2 11 L 2 13 L 11 13 L 11 22 L 13 22 L 13 13 L 22 13 L 22 11 L 13 11 L 13 2 Z"></path>
+                        </svg>
+                    </button>
+                </form>
+                <ul id="ipAdress"></ul>
+                <form id='remove_form' onsubmit="removeIp()">
+                    <input id="remove_ip" type="text">
+                    <button id="ip" type="submit">Remover IPV4</button>
+                </form>
+            </div>
+            <div>
+                <table id="table">
+                    <thead>
+                        <tr>
+                            <th>IP</th>
+                            <th>Status</th>
+                            <th><button onclick="ListIp()">Refresh</button></th>
+                        </tr>
+                    </thead>
+                    <tbody id="ip_data">
+                        <tr>
+                            <th>192.168.10.1</th>
+                            <th>
+                                <p class="status status-auth">Authorized</p>
+                            </th>
+                            <th><button>Remove IP</button></th>
+                        </tr>
+                        <tr>
+                            <th>127.0.0.1</th>
+                            <th>
+                                <p class="status status-master">Master</p>
+                            </th>
+                            <th>Not Removable</th>
+                        </tr>
+                        <tr>
+                            <th>192.168.15.25</th>
+                            <th>
+                                <p class="status status-removed">Removed</p>
+                            </th>
+                            <th><button>Undo</button></th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </body>
+
+    <script>
+        var form = document.getElementById("myForm");
+        var remove_form = document.getElementById("remove_form");
+        function handleForm(event) { event.preventDefault(); }
+        form.addEventListener('submit', handleForm);
+        remove_form.addEventListener('submit', handleForm);
+        const ul = document.getElementById("ipAdress");
+        var state = 'blank';
+        var ipdigitado = '';
+        console.log('IP digitado: ', ipdigitado);
+
+        function already_added() {
+            var emenda = "Erro: IP " + ipdigitado + " JÁ CADASTRADO";
+            document.getElementById('ipAdress').innerText = emenda;
+            document.getElementById('ipAdress').style.color = 'red';
+        }
+        function user_added() {
+            var emenda = "IP: " + ipdigitado + " Cadastrado com sucesso";
+            document.getElementById('ipAdress').innerText = emenda;
+            document.getElementById('ipAdress').style.color = 'red';
+        }
+        function regex_failure() {
+            var emenda = "IP " + ipdigitado + " não é válido";
+            document.getElementById('ipAdress').innerText = emenda;
+            document.getElementById('ipAdress').style.color = 'red';
+
+            if (ipdigitado.includes("<script>") == true)
+                alert('NEM TENTE QUE NÃO CONSEGUE');
+        }
+        function ip_removed() {
+            var emenda = "IP " + ipdigitado + " REMOVIDO com sucesso";
+            document.getElementById('ipAdress').innerText = emenda;
+            document.getElementById('ipAdress').style.color = 'red';
+        }
+        function ip_master_plus() {
+            var emenda = "IP " + ipdigitado + " NAO PODE SER REMOVIDO";
+            document.getElementById('ipAdress').innerText = emenda;
+            document.getElementById('ipAdress').style.color = 'red';
+        }
+        //sincronizacao de estados
+        function sync() {
+            var retorno = '';
+            switch (state) {
+                case 'aqui': retorno = 'Lascou'; break;
+                case 'blank': retorno = 'O jacare nadou'; break;
+                case 'user_added': retorno = 'IP adicionado com Sucesso!'; break;
+                case 'already_added': retorno = 'IP JÁ CADASTRADO'; break;
+                case 'regex_failure': retorno = 'Isso não parece um IP'; break;
+                case 'user_removed': retorno = 'IP removido com Sucesso!'; break;
+                case 'get_ip_list': retorno = 'Lista de IPs atualizada!'; break;
+                default: retorno = 'Dá em nada';
+            }
+            document.getElementById('ipAdress').innerText = retorno;
+            document.getElementById('ipAdress').style.color = 'red';
+        }
+
+        function sendIp() {
+            ip = document.getElementById('ip_user').value;
+            console.log('IP usuario', ip);
+            fetch('/add_user_ip', { method: 'POST', body: ip })
+                .then((response) => response.text())
+                .then(resp => { state = resp; sync(); });
+        }
+
+        function removeIp() {
+            ip = document.getElementById('remove_ip').value;
+            ipdigitado = ip;
+            console.log('IP usuario', ip);
+            fetch('/remove_ip', { method: 'POST', body: ip })
+                .then((response) => response.text())
+                .then(resp => { state = resp; sync(); });
+        }
+
+        function ListIp() {
+            ipList = document.getElementById('ip_data').value;
+            fetch('/get_ip_list', { method: 'GET', body: ipList })
+                .then((response) => response.text())
+                .then(resp => {
+                    state = resp;
+                    sync();
+                    console.log(resp);
+                    //  if (response.text().length > 0) {
+                    //         var temp = "";
+                    //         response.text().array.forEach((ipData) => {
+                    //             temp += "<tr>";
+                    //             temp += "<td>" + ipData + "</td>";
+                    //             temp += "<td>" + "Nice" + "</td>";
+                    //             temp += "<td>" + "<button>Ação</button>" + "</td></tr>";
+
+                    //         });
+                    //         document.getElementById('ip_data').innerHTML = temp;
+                    //  }
+                });
+        }
+    </script>
 </html>

@@ -1,0 +1,166 @@
+@import url(https://fonts.googleapis.com/css2?family=Inika:wght@400;700&family=Inter:wght@400;500&display=swap);
+
+:root {
+    --background-color: #f9f9f9;
+    --title-color: #171717;
+    --search-bar-color: #f1f1f1;
+    --active-color: #535353;
+    --inactive-color: #a9a9a9;
+}
+
+.dark-theme {
+    --background-color: #202020;
+    --title-color: #f1f1f1;
+    --search-bar-color: #171717;
+    --active-color: #fff;
+    --inactive-color: #818181;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background: var(--background-color);
+    font-family: 'Inter', sans-serif;
+}
+
+.content {
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+    padding: auto;
+    padding-top: 6.25rem;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    padding: 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    padding: 3.44rem 0.5rem 0;
+}
+
+.logo h1 {
+    color: var(--title-color);
+    font-family: 'Inika', serif;
+    font-weight: 700;
+    font-size: 3.125rem;
+    padding: 0.625rem;
+}
+
+.logo h2 {
+    color: var(--title-color);
+    font-family: 'Inika', serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    padding: 0 0 0 0.625rem;
+}
+
+.searchBar {
+    width: 100%;
+    max-width: 720px;
+    background: var(--search-bar-color);
+    display: flex;
+    align-items: center;
+    border-radius: 0.3125rem;
+    padding: 0.625rem 1.25rem;
+}
+
+.searchBar input {
+    background: transparent;
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.75rem 0.625rem;
+    font-size: 1.5rem;
+    color: var(--active-color);
+
+}
+
+.searchBar button {
+    border: 0;
+    border-radius: 50%;
+    width: 3.125rem;
+    height: 3.125rem;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.searchBar button svg {
+    width: 32px;
+    fill: var(--active-color);
+}
+
+.searchBar button:disabled svg,
+.seachBar button[disabled] svg {
+    fill: var(--inactive-color);
+}
+
+::placeholder {
+    color: var(--inactive-color);
+}
+
+table {
+    border-collapse: collapse;
+    box-shadow: 0 5px 10px #e1e5ee;
+    background-color: white;
+    text-align: left;
+    overflow: hidden;
+}
+
+thead {
+    box-shadow: 0 5px 10px #e1e5ee;
+}
+
+th {
+    padding: 1rem 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+}
+
+td {
+    padding: 1rem 2rem;
+}
+
+.status {
+    border-radius: 0.2rem;
+    background-color: red;
+    padding: 0.2rem 1rem;
+    text-align: center;
+}
+
+
+.status-master {
+    background-color: #fff0c2;
+    color: #a68b00;
+}
+
+.status-auth {
+    background-color: #c8e6c9;
+    color: #388e3c;
+}
+
+.status-removed {
+    background-color: #ffcdd2;
+    color: #c62828;
+}
