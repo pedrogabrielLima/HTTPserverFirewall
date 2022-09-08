@@ -45,8 +45,8 @@
                 display: flex;
                 flex: auto;
                 flex-direction: column;
-                padding: auto;
-                padding-top: 6.25rem;
+                padding: 6.325rem;
+                padding-top: auto;
                 align-items: center;
             }
 
@@ -83,7 +83,8 @@
                 padding: 0 0 0 0.625rem;
             }
 
-            .searchBar {
+            .addIPBar,
+            .removeIPBar {
                 width: 100%;
                 max-width: 720px;
                 background: var(--search-bar-color);
@@ -93,7 +94,8 @@
                 padding: 0.625rem 1.25rem;
             }
 
-            .searchBar input {
+            .addIPBar input,
+            .removeIPBar input {
                 background: transparent;
                 flex: 1;
                 border: none;
@@ -104,7 +106,8 @@
 
             }
 
-            .searchBar button {
+            .addIPBar button,
+            .removeIPBar button {
                 border: 0;
                 border-radius: 50%;
                 width: 3.125rem;
@@ -113,13 +116,16 @@
                 background-color: transparent;
             }
 
-            .searchBar button svg {
+            .addIPBar button svg,
+            .removeIPBar button svg {
                 width: 32px;
                 fill: var(--active-color);
             }
 
-            .searchBar button:disabled svg,
-            .seachBar button[disabled] svg {
+            .addIPBar button:disabled svg,
+            .addIPBar button[disabled] svg,
+            .removeIPBar button:disabled svg,
+            .removeIPBar button[disabled] svg {
                 fill: var(--inactive-color);
             }
 
@@ -171,7 +177,7 @@
                 color: #c62828;
             }
 
-            .btnRefresh {
+            .refreshBTN {
                 align-items: center;
                 border-radius: 0.3125rem;
                 padding: 0.625rem 1.25rem;
@@ -193,19 +199,25 @@
                 <h2>Seja Bem vindo ao Firewall</h2>
             </div>
             <div class="container">
-                <form id="myForm" class="searchBar" onsubmit="sendIp()">
-                    <input id="ip_user" type="ip" class="searchCamp" placeholder="0.0.0.0">
+                <form id="myForm" class="addIPBar" onsubmit="sendIp()">
+                    <input id="ip_user" type="ip" class="addIPCamp" placeholder="Adicionar IP: 0.0.0.0">
                     <button id="ip" type="submit" class="searchButton">
                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                             <path fill-rule="evenodd" d="M 11 2 L 11 11 L 2 11 L 2 13 L 11 13 L 11 22 L 13 22 L 13 13 L 22 13 L 22 11 L 13 11 L 13 2 Z"></path>
                         </svg>
                     </button>
                 </form>
-                <ul id="ipAdress"></ul>
-                <form id='remove_form' onsubmit="removeIp()">
-                    <input id="remove_ip" type="text">
-                    <button id="ip" type="submit">Remover IPV4</button>
+                <br>
+                <form id='remove_form' class="removeIPBar" onsubmit="removeIp()">
+                    <input id="remove_ip" type="text" placeholder="Remover IP: 0.0.0.0">
+                    <button id="ip" type="submit"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32">
+                        <path d="M 16 3 C 8.832031 3 3 8.832031 3 16 C 3 23.167969 8.832031 29 16 29 C 23.167969 29 29 23.167969 29 16 C 29 8.832031 23.167969 3 16 3 Z M 16 5 C 22.085938 5 27 9.914063 27 16 C 27 18.726563 26.011719 21.207031 24.375 23.125 L 9.03125 7.46875 C 10.925781 5.917969 13.351563 5 16 5 Z M 7.625 8.875 L 22.96875 24.53125 C 21.074219 26.082031 18.648438 27 16 27 C 9.914063 27 5 22.085938 5 16 C 5 13.273438 5.988281 10.792969 7.625 8.875 Z"></path>
+                    </svg></button>
                 </form>
+                <br>
+                <div>
+                    <ul id="ipAdress"></ul>
+                </div>
             </div>
             <div id="table_area">
                 <table id="ip_table">
@@ -213,33 +225,12 @@
                         <tr>
                             <th>IP</th>
                             <th>Status</th>
-                            <th><button id="btnRefresh" onclick="ListIp()"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32" style=" fill:#000000;">
-                                        <path d="M 16 4 C 10.886719 4 6.617188 7.160156 4.875 11.625 L 6.71875 12.375 C 8.175781 8.640625 11.710938 6 16 6 C 19.242188 6 22.132813 7.589844 23.9375 10 L 20 10 L 20 12 L 27 12 L 27 5 L 25 5 L 25 8.09375 C 22.808594 5.582031 19.570313 4 16 4 Z M 25.28125 19.625 C 23.824219 23.359375 20.289063 26 16 26 C 12.722656 26 9.84375 24.386719 8.03125 22 L 12 22 L 12 20 L 5 20 L 5 27 L 7 27 L 7 23.90625 C 9.1875 26.386719 12.394531 28 16 28 C 21.113281 28 25.382813 24.839844 27.125 20.375 Z"></path>
-                                    </svg></button></th>
+                            <th><button id="btnRefresh" class="refreshBTN" onclick="ListIp()"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32" style=" fill:#000000;">
+                                <path d="M 16 4 L 16 6 C 21.535156 6 26 10.464844 26 16 C 26 21.535156 21.535156 26 16 26 C 10.464844 26 6 21.535156 6 16 C 6 12.734375 7.585938 9.851563 10 8.03125 L 10 13 L 12 13 L 12 5 L 4 5 L 4 7 L 8.09375 7 C 5.59375 9.199219 4 12.417969 4 16 C 4 22.617188 9.382813 28 16 28 C 22.617188 28 28 22.617188 28 16 C 28 9.382813 22.617188 4 16 4 Z"></path>
+                            </svg></button></th>
                         </tr>
                     </thead>
                     <tbody id="ip_data">
-                        <!-- <tr>
-                            <th>192.168.10.1</th>
-                            <th>
-                                <p class="status status-auth">Authorized</p>
-                            </th>
-                            <th><button>Remove IP</button></th>
-                        </tr>
-                        <tr>
-                            <th>127.0.0.1</th>
-                            <th>
-                                <p class="status status-master">Master</p>
-                            </th>
-                            <th>Not Removable</th>
-                        </tr>
-                        <tr>
-                            <th>192.168.15.25</th>
-                            <th>
-                                <p class="status status-removed">Removed</p>
-                            </th>
-                            <th><button>Undo</button></th>
-                        </tr> -->
                     </tbody>
                 </table>
             </div>
@@ -257,7 +248,7 @@
         var ipdigitado = '';
         console.log('IP digitado: ', ipdigitado);
         ListIp();
-        // var ip_authority = '';
+        var ip_authority = 'is_Authorized';
 
         function already_added() {
             var emenda = "Erro: IP " + ipdigitado + " JÁ CADASTRADO";
@@ -287,12 +278,6 @@
             document.getElementById('ipAdress').innerText = emenda;
             document.getElementById('ipAdress').style.color = 'red';
         }
-        // function GetIPAuthority(ip_info) {
-        //     console.log(ip_info);
-        //     fetch('/get_ip_authority', { method: 'GET', body: ip_info })
-        //         .then((response) => response.text())
-        //         .then(resp => { state = resp; info = resp; ip_authority = resp; sync(info); });
-        // }
 
         function updateTable(infoTable) {
             var tableIP = document.getElementById('ip_data');
@@ -327,7 +312,7 @@
                     //         break;
                     // }
                     temp += '<td><p class="status status-auth">Authorized</p></td>';
-                    temp += '<td><button>Remove IP</button></td></tr>';
+                    temp += '</tr>';
                 });
                 tableIP.innerHTML = (temp);
             }
@@ -373,6 +358,13 @@
                 .then((response) => response.text())
                 .then(resp => { state = (resp.split(',')[0]); info = resp; sync(info); });
         }
+
+        // function GetIPAuthority(ip_info) {
+        //     console.log(ip_info);
+        //     fetch('/get_ip_authority', { method: 'POST', body: ip_info })
+        //         .then((response) => response.text())
+        //         .then(resp => { state = resp; info = resp; ip_authority = resp; sync(info); });
+        // }
 
     </script>
 </html>

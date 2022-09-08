@@ -18,7 +18,10 @@ header_ = ('HTTP/1.1 {num_plus_resp}\r\n'
 h = open('raiz/notFound.html', 'r')
 notfound = h.read()
 
-states_list = ['add_user_ip', 'remove_ip', 'ip_prefix', 'port', 'get_ip_list']
+states_list = [
+    'add_user_ip', 'remove_ip', 'ip_prefix', 'port', 'get_ip_list',
+    'get_ip_authority'
+]
 ip_list = ['127.0.0.1', '192.168.1.10', '192.168.15.1']
 # Cria um set de arquivos
 fileDic = {}
@@ -120,14 +123,6 @@ try:
                 elif request_data.path.replace('/', '') == ('get_ip_list'):
                     resp = ('ip_list' + ',' + ",".join(ip_list))
 
-                # elif request_data.path.replace('/','') == ('get_ip_authority'):
-                #     if (tratarStringBody(request_data.body)) in ip_list:
-                #         if (tratarStringBody(request_data.body)) in ip_fixo:
-                #             resp = 'is_Master'
-                #         else:
-                #             resp = 'is_Authorized'
-                #     else:
-                #         resp = 'is_Removed'
                 send_message(web_socket, 'text/plain', resp.encode())
 
             #Checa se o que foi passado nao está no dicionário de arquivos e se é maior que 0
@@ -195,18 +190,16 @@ try:
 
                 # elif request_data.path.replace('/',
                 #                                '') == ('get_ip_authority'):
-                #     if (checkIP(tratarStringBody(request_data.body))):
-                #         if (tratarStringBody(request_data.body)) in ip_list:
-                #             if (tratarStringBody(
-                #                     request_data.body)) in ip_fixo:
-                #                 send_message(web_socket, 'text/plain',
-                #                              str.encode('is_Master'))
-                #             else:
-                #                 send_message(web_socket, 'text/plain',
-                #                              str.encode('is_Authorized'))
+                #     if checkIP(tratarStringBody(request_data.body)):
+                #         if (tratarStringBody(request_data.body)) in ip_fixo:
+                #             resp = 'is_Master'
+                #         elif (tratarStringBody(
+                #                 request_data.body)) not in ip_list:
+                #             resp = 'is_Removed'
                 #         else:
-                #             send_message(web_socket, 'text/plain',
-                #                          str.encode('is_Removed'))
+                #             resp = 'is_Authorized'
+                #         send_message(web_socket, 'text/plain',
+                #                      str.encode(resp))
 
                 else:
                     send_message(web_socket, 'text/plain',
