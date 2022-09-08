@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<TITLE> Links Mais usados </TITLE>
+<meta charset="UTF-8">
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<link rel="shortcut icon" href="https://i.postimg.cc/j5wqdYsF/favicon16.gif">
+<style>
+    .divdetras{
+        /* Background pattern from Toptal Subtle Patterns */
+        background-image: url("https://i.pinimg.com/originals/9d/73/2e/9d732eb5ff10910ba8c81538fe7fcd65.gif");
+        height: 205px;
+        width: 100%;
+    }
+    .center {
+        margin: auto;
+        width: 50%;
+        padding: 10px;
+    }
+    .vertical-center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        border: 3px solid green;
+    }
+</style>
+</head>
+<body class="divdetras">
+<div ALIGN="CENTER">
+    <div class="center">
+        <div style="background-color:white;" class="vertical-center">
+            <h1 id="ip">SEU IP</h1>
+            <h2 id="mensagem">ESTÁ BLOQUEADO POR TEMPO INDETERMINADO</h2>
+        </div>
+    </div>
+</div>
+<script>
+    var back_response = '';
+    function sync() {
+        
+        var retorno = ''
+        switch (back_response.split(',')[0]) {
+            case 'blocked_user': retorno = back_response.split(',')[1]; break;
+            default: retorno = 'UEPAA'
+        }
+        document.getElementById('ip').innerText = "ESTE IP: " + retorno;
+        document.getElementById('mensagem').style.color = '#261545';
+    }
+        fetch('/blocked_state', {method: 'GET'})
+        .then((response) => response.text())
+        .then(resp => {back_response = resp; sync();});
+</script>
+</body>
+</html>

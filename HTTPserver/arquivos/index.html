@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+<TITLE> Links Mais usados </TITLE>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://i.postimg.cc/j5wqdYsF/favicon16.gif">
+<style>
+    @import url(https://fonts.googleapis.com/css2?family=Inika:wght@400;700&family=Inter:wght@400;500&display=swap);
+
+    :root {
+        --background-color: #f9f9f9;
+        --title-color: #171717;
+        --search-bar-color: #f1f1f1;
+        --active-color: #535353;
+        --inactive-color: #a9a9a9;
+    }
+
+    .dark-theme {
+        --background-color: #202020;
+        --title-color: #f1f1f1;
+        --search-bar-color: #171717;
+        --active-color: #fff;
+        --inactive-color: #818181;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        height: 100%;
+    }
+
+    body {
+        background: var(--background-color);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .content {
+        display: flex;
+        flex: auto;
+        flex-direction: column;
+        padding: auto;
+        padding-top: 6.25rem;
+        align-items: center;
+    }
+
+    .container {
+        width: 100%;
+        padding: 10%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        justify-content: center;
+        padding: 3.44rem 0.5rem 0;
+    }
+
+    .logo h1 {
+        color: var(--title-color);
+        font-family: 'Inika', serif;
+        font-weight: 700;
+        font-size: 3.125rem;
+        padding: 0.625rem;
+    }
+
+    .logo h2 {
+        color: var(--title-color);
+        font-family: 'Inika', serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        padding: 0 0 0 0.625rem;
+    }
+
+    .searchBar {
+        width: 100%;
+        max-width: 720px;
+        background: var(--search-bar-color);
+        display: flex;
+        align-items: center;
+        border-radius: 0.3125rem;
+        padding: 0.625rem 1.25rem;
+    }
+
+    .searchBar input {
+        background: transparent;
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 0.75rem 0.625rem;
+        font-size: 1.5rem;
+        color: var(--active-color);
+
+    }
+
+    .searchBar button {
+        border: 0;
+        border-radius: 50%;
+        width: 3.125rem;
+        height: 3.125rem;
+        cursor: pointer;
+        background-color: transparent;
+    }
+
+    .searchBar button svg {
+        width: 32px;
+        fill: var(--active-color);
+    }
+
+    .searchBar button:disabled svg,
+    .seachBar button[disabled] svg {
+        fill: var(--inactive-color);
+    }
+
+    ::placeholder {
+        color: var(--inactive-color);
+    }
+
+    table {
+        border-collapse: collapse;
+        box-shadow: 0 5px 10px #e1e5ee;
+        background-color: white;
+        text-align: left;
+        overflow: hidden;
+    }
+
+    thead {
+        box-shadow: 0 5px 10px #e1e5ee;
+    }
+
+    th,
+    td {
+        padding: 1rem 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1rem;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    .status {
+        border-radius: 0.2rem;
+        background-color: red;
+        padding: 0.2rem 1rem;
+        text-align: center;
+    }
+    .status-master {
+        background-color: #fff0c2;
+        color: #a68b00;
+    }
+
+    .status-auth {
+        background-color: #c8e6c9;
+        color: #388e3c;
+    }
+
+    .status-removed {
+        background-color: #ffcdd2;
+        color: #c62828;
+    }
+
+    .btnRefresh {
+        align-items: center;
+        border-radius: 0.3125rem;
+        padding: 0.625rem 1.25rem;
+        border: 0;
+        border-radius: 50%;
+        width: 3.125rem;
+        height: 3.125rem;
+        cursor: pointer;
+        background-color: transparent;
+    }
+    .divdetras{
+        /* Background pattern from Toptal Subtle Patterns */
+        background-image: url("https://i.pinimg.com/originals/54/06/7b/54067b1e84f4c473730b3ac4ee1262e5.gif");
+        height: 498px;
+        width: 100%;
+    }
+
+</style>
+</head>
+<body onload="ListIp()">
+<div ALIGN="CENTER">
+    <div id="formaArea" class="divdetras">
+        <h1 style="color:#f1f1f1">TUX FIREWALL</h1>
+        <p id="mensagem" style="color:#f1f1f1">SEJA BEM VINDO AO FIREWALL</p>
+        <form id= 'myForm' onsubmit="sendIp()">
+            <input id="ip_user" type="text" class="searchCamp" placeholder="0.0.0.0">
+            <button id="ip" type="submit" class="btn btn-success">Adicionar IPV4</button>
+        </form><br>
+        <form id= 'remove_form' onsubmit="removeIp()">
+            <input id="remove_ip" type="text" placeholder="0.0.0.0">
+            <button id="ip" type="submit" class="btn btn-danger">Remover IPV4</button>
+        </form>
+    </div>
+    <br>
+    <ul id="ipAdress"></ul>
+    <br>
+    <div id="table_area">
+        <table id="ip_table" class="table">
+            <thead class="thead-dark">
+                <tr class="success">
+                    <th >IP</th>
+                    <th >Status</th>
+                    <th><button id="btnRefresh" onclick="ListIp()"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32" style=" fill:#000000;">
+                                <path d="M 16 4 C 10.886719 4 6.617188 7.160156 4.875 11.625 L 6.71875 12.375 C 8.175781 8.640625 11.710938 6 16 6 C 19.242188 6 22.132813 7.589844 23.9375 10 L 20 10 L 20 12 L 27 12 L 27 5 L 25 5 L 25 8.09375 C 22.808594 5.582031 19.570313 4 16 4 Z M 25.28125 19.625 C 23.824219 23.359375 20.289063 26 16 26 C 12.722656 26 9.84375 24.386719 8.03125 22 L 12 22 L 12 20 L 5 20 L 5 27 L 7 27 L 7 23.90625 C 9.1875 26.386719 12.394531 28 16 28 C 21.113281 28 25.382813 24.839844 27.125 20.375 Z"></path>
+                            </svg></button></th>
+                </tr>
+            </thead>
+            <tbody id="ip_data">
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    var masterIP='';
+    var form = document.getElementById("myForm");
+    var remove_form = document.getElementById("remove_form");
+    function handleForm(event) { event.preventDefault(); } 
+    form.addEventListener('submit', handleForm);
+    remove_form.addEventListener('submit', handleForm);
+    const ul = document.getElementById("ipAdress");
+    var state = 'blank'; 
+    var ipdigitado = ''
+    console.log('IP digitado: ', ipdigitado)
+
+    function already_added(){
+        var emenda ="Erro: IP " + ipdigitado+ " JÁ CADASTRADO";
+        document.getElementById('ipAdress').innerText = emenda;
+        document.getElementById('ipAdress').style.color = 'red'; 
+    }
+    function user_added(){
+        var emenda ="IP: " + ipdigitado+ " Cadastrado com sucesso";
+        document.getElementById('ipAdress').innerText = emenda;
+        document.getElementById('ipAdress').style.color = 'red';
+        ListIp(); 
+    }
+    function regex_failure(){
+        var emenda ="IP " + ipdigitado+ " não é válido";
+        document.getElementById('ipAdress').innerText = emenda;
+        document.getElementById('ipAdress').style.color = 'red'; 
+        if(ipdigitado.includes("<script>") == true)
+            alert('NEM TENTE QUE NÃO CONSEGUE')
+    }
+    function ip_removed(){
+        var emenda ="IP " + ipdigitado+ " REMOVIDO com sucesso";
+        document.getElementById('ipAdress').innerText = emenda;
+        document.getElementById('ipAdress').style.color = 'red';
+        ListIp(); 
+    }
+    function ip_master_plus(){
+        var emenda ="IP " + ipdigitado+ " NAO PODE SER REMOVIDO";
+        document.getElementById('ipAdress').innerText = emenda;
+        document.getElementById('ipAdress').style.color = 'red'; 
+    }
+    function ip_not_provided(){
+        var emenda ="IP " + ipdigitado+ " NAO ESTA NA LISTA DE IPs CADASTRADOS";
+        document.getElementById('ipAdress').innerText = emenda;
+        document.getElementById('ipAdress').style.color = 'red'; 
+    }
+    function master_ip_devolvido(ip_devolvido){
+        masterIP=ip_devolvido;
+    }
+    fetch('/get_master_ip', {method: 'GET'})
+        .then((response) => response.text())
+        .then(resp => {ip_master_devolvido = resp; master_ip_devolvido(ip_master_devolvido);});
+    function updateTable(infoTable) {
+            var tableIP = document.getElementById('ip_data');
+            if (infoTable.length > 0) {
+                var ips = infoTable.split(',');
+                ips.shift();
+                var temp = '';
+                var status = '';
+                var btn = '';
+                ips.forEach((ipData) => {
+                    if(ipData==masterIP || ipData == '127.0.0.1'){
+                        temp += '<tr>';
+                        temp += '<td>' + 'MASTER IP' + '</td>';
+                        temp += '<td><p class="status status-auth">Authorized</p></td></tr>';
+                    }else{
+                        temp += '<tr>';
+                        temp += '<td>' + ipData + '</td>';
+                        temp += '<td><p class="status status-auth">Authorized</p></td></tr>';
+                    }
+                });
+                tableIP.innerHTML = (temp);
+            }
+        }
+    //sincronizacao de estados   
+    function sync(info) {
+        var tInfo = info;
+        var retorno = ''
+        switch (state) {
+            case 'ip_removed': ip_removed(); break;
+            case 'blank': retorno = 'O jacare nadou'; break;
+            case 'user_added': user_added(); break;
+            case 'already_added': already_added(); break;
+            case 'regex_failure': regex_failure(); break;
+            case 'ip_master_plus': ip_master_plus(); break;
+            case 'ip_not_provided': ip_not_provided(); break;
+            case 'ip_list': updateTable(tInfo); break;
+            case 'banned_prefix': retorno= 'ainda n feito'; break;
+            default: retorno = 'DEU RUIM'
+        }   
+    }
+        
+    function sendIp(){
+        ip = document.getElementById('ip_user').value;
+        ipdigitado = ip;
+        console.log('IP usuario',ip);
+        fetch('/add_user_ip', {method: 'POST', body:  ip})
+        .then((response) => response.text())
+        .then(resp => {state = resp; sync();});
+    }
+    function removeIp(){
+        ip = document.getElementById('remove_ip').value;
+        ipdigitado = ip;
+        console.log('IP usuario',ip);
+        fetch('/remove_ip', {method: 'POST', body:  ip})
+        .then((response) => response.text())
+        .then(resp => {state = resp; sync();});
+    }
+    function ListIp() {
+            fetch('/get_ip_list', { method: 'GET' })
+                .then((response) => response.text())
+                .then(resp => { state = (resp.split(',')[0]); info = resp; sync(info); });
+        }
+</script>
+</body>
+</html>

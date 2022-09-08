@@ -3,18 +3,58 @@ import socket
 import os
 from request import Request
 
-h = open('raiz/notFound.html', 'r')
-notfound = h.read()
+#h = open('arquivos/notFound.html', 'r')
+#notfound = h.read()
 
 #lista de estados possiveis para enviar e receber
-states_list=['already_added','add_user_ip','remove_ip','ip_prefix','port', 'regex_failure']
-ip_list=['127.0.0.1', '192.168.1.10']
+states_list=['already_added','add_user_ip','remove_ip','ip_prefix','port','regex_failure','blocked_state','get_ip_list','get_master_ip']
+
+#lista de ips que o server vai usar, ela sera populada
+#com os ips vindos do arquivo.
+ip_fixo='192.168.43.160'
+#arquivoIPs='ips.txt'
+#unica=[ip_fixo]
+ip_list=[ip_fixo,'127.0.0.1','192.168.1.28']
 fileDic = {}
 request_data = ''
-ip_fixo='192.168.1.10'
+server_PORT = 8080  # Porta de acesso
+max_CONECTIONS = 10  # Número máximo de conexões
+data_BUFFER = 2000  # Tamanho do buffer
+#listaDoArquivo=[]
+
+#lê a lista de IPs guardadas no arquivo e
+#retorna eles em uma variavel
+#def readFromIPfile():
+#    with open('teste.txt') as f:
+#        lines = f.readlines()
+#    for line in lines:
+#        a=line.split(',')
+#    #uniqueReturn = list(set(unica+ a))
+#    set_1 = set(ip_list)
+#    set_2 = set(a)
+#    listaDiferenca = list(set_2 - set_1)
+#    for item in listaDiferenca:
+#        if item not in ip_list:
+#            ip_list.append(item)
+#    print('UNIQUE: ', listaDiferenca)
+#    for itemOriginal in a:
+#        if itemOriginal not in listaDoArquivo:
+#            listaDoArquivo.append(itemOriginal)
 
 
-#le os arquivos no server
+#def writeToIPfile(listaAtual):
+#    set_1 = set(listaAtual)
+#    set_2 = set(listaDoArquivo)
+#    listaDiferenca = list(set_1 - set_2)
+#    for item in listaDiferenca:
+#        if item not in listaDoArquivo:
+#            with open('teste.txt', 'a') as f:
+#                f.write(','+item)
+#    print('LISTA DO ARQUIVO: ',listaDoArquivo)
+#    print('IP A ESCREVER: ',listaDiferenca)
+
+
+#le os arquivos no server e adiciona ao dicionario de arquivos com sua chave
 def readFile(file_name):
     if file_name in fileDic.keys():
         path= fileDic[file_name]
@@ -33,16 +73,28 @@ def getAllFiles(dir):
 
 #devolve html pro front
 def loadHtml(web_socket, path, ip_do_cara):
-    if path == 'blocked' or path == '/blocked' and ip_do_cara in ip_list:
+    #\/ volta o notFound
+    if ip_do_cara in ip_list and path == 'blocked':
         response = bytes(readFile('notFound'), 'utf-8')
+    #\/ volta o notFound
+    elif ip_do_cara in ip_list and path == 'varrendoDiretorio':
+        response = bytes(readFile('notFound'), 'utf-8')
+    #\/ volta o notFound
+    elif ip_do_cara in ip_list and path in states_list:
+        response = bytes(readFile('notFound'), 'utf-8')
+    #\/ volta a pagina html que possui o nome do path passado
     elif ip_do_cara in ip_list:
         response = bytes(readFile(path), 'utf-8')
+    #\/ volta a caveirona em caso de comportamento malicioso externo
+    elif ip_do_cara not in ip_list and path in states_list:
+        response = bytes(readFile('varrendoDiretorio'), 'utf-8')
+    #\/ volta a pagina de blocked
     elif ip_do_cara not in ip_list:
         response = bytes(readFile('blocked'), 'utf-8')
     send_message(web_socket,'text/html', response)
 
 
-#envia para a pagina
+#envia para o front
 def send_message(web_socket, content_type, response):
     resp = f'HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {len(response)}\r\n\r\n'
     web_socket.sendall(str.encode(resp) + response)
@@ -67,49 +119,52 @@ def checkIP(ip):
 
 
 try:
+    #PEGA O CAMINHO RAIZ DO SERVER
     abs_path = os.getcwd()
+    #PEGA TODOS OS ARQUIVOS EXISTENTES NO SERVER
+    #DO TIPO HTML
     getAllFiles(abs_path)
+    #STARTA O SOCKET
     welcome_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    welcome_socket.bind(('', 8080))
-    welcome_socket.listen(10)
+    welcome_socket.bind(('', server_PORT))
+    welcome_socket.listen(max_CONECTIONS)
     print('Pode entrar')
     while True:
         print('LISTA de IPs Cadastrados: ', ip_list)
         web_socket, _ = welcome_socket.accept()
+        socket_p=web_socket.recv(data_BUFFER)
+        websocket_decoded = socket_p.decode()
         ip_do_usuario = web_socket.getpeername()[0]
-        socket_p=web_socket.recv(2000)
-        websocket_decoder = socket_p.decode()
         #na linha abaixo é chamado o método de construção de request
         #ele gerencia o que chega
-        if Request.builder(websocket_decoder) == None:
+        if Request.builder(websocket_decoded) == None:
             print('AAAAAAAAAAAAAA')
             print('VEIO NULO')
         else:
-            request_data=Request.builder(websocket_decoder)
+            request_data=Request.builder(websocket_decoded)
 
         #este if testa se o metodo recebido eh um GET    
         if request_data.method == 'GET':
-            print('IP de quem chega: ', web_socket.getpeername()[0])
+            print('IP de quem chega: ', ip_do_usuario)
             correlation_paths = list(filter(lambda filename: filename==request_data.path.replace('/',''), fileDic.keys()))
-            #print('FileDic: ', fileDic)
-            #print('CORRELATION', correlation_paths)
-            #print('Request Path', request_data.path)
             #este if checa se o que foi digitado apos a barra "/" é um estado ou um arquivo
-            print('Printando Path', request_data.path.replace('/', ''))
+            #Nesse caso, dentro do GET, ele so vai entrar apos a pagina HTML carregada e
+            #Fizer um fetch que contenha alguma dos estados setados na states_list, que nesse caso
+            #é o estado 'blocked_state'
+            print('Printando PATH: ', request_data.path.replace('/', ''))
             if request_data.path.replace('/', '') in states_list:
-                #se estiver dentro da lista de estados possiveis, é pq n é um arquivo
-                if request_data.path.replace('/', '') == 'add_user_ip':
-                    send_message(web_socket, 'text/plain', str.encode('user_added'))
-                    print('ADICIONOU NO GET')
-                elif request_data.path.replace('/', '') == 'remove_ip':
-                    send_message(web_socket, 'text/plain', str.encode('user_remove'+','+ip_do_usuario))
-                elif request_data.path.replace('/', '') == 'ip_prefix':
-                    send_message(web_socket, 'text/plain', str.encode('user_remove'+','+ip_do_usuario))
+                #TODO: MELHORAR O FETCH VINDO DO FRONT PARA UM ESTADO BLOQUEADO
+                if request_data.path.replace('/', '') == 'blocked_state':
+                    send_message(web_socket, 'text/plain', str.encode('blocked_user'+','+ip_do_usuario))
+                elif request_data.path.replace('/', '') == ('get_ip_list'):
+                    send_message(web_socket, 'text/plain', str.encode('ip_list' + ',' + ",".join(ip_list)))
+                elif request_data.path.replace('/', '') == ('get_master_ip'):
+                    send_message(web_socket, 'text/plain', str.encode(ip_fixo))
                 else:
-                    send_message(web_socket, 'text/plain', str.encode('dont_care'))
-            #Checa se o que foi passado nao está no dicionário de arquivos e se é maior que 0
+                    loadHtml(web_socket, request_data.path.replace('/', ''), ip_do_usuario)
+            #se o caminho passado corresponde a algum item do dicionario, o valor
+            # vai ser maior que 1, logo, carrega o arquivo presente no dicionario
             if correlation_paths not in states_list and len(correlation_paths) > 0:
-                #se for maior que zero, carrega o arquivo presente no dicionario
                 loadHtml(web_socket, correlation_paths[0], ip_do_usuario)
             else:
                 #se n for maior que zero, ou seja, se veio vazio, carrega o notFound
@@ -132,7 +187,11 @@ try:
                             send_message(web_socket, 'text/plain', str.encode('user_added'))
                             ip_list.append(tratarStringBody(request_data.body))
                             indiceUltimoIP=len(ip_list)
+                            #writeToIPfile(tratarStringBody(request_data.body))
+                            #print('IP ADICIONADO NO ARQUIVO')
+                            #writeToFile(tratarStringBody(request_data.body))
                             print('Ultimo IP cadastrado: ', ip_list[indiceUltimoIP-1])
+                            #print('PRINTANDO CONTEUDO DO ARQUIVO: ')
                     #se o valor passado for incompátivel com a regex de IPV4, volta um
                     # estado de falha "regex_failure"        
                     else:
@@ -148,8 +207,11 @@ try:
                                 send_message(web_socket, 'text/plain', str.encode('ip_removed'))
                                 ip_list.remove(tratarStringBody(request_data.body))
                             else:
-                                print('IP 192.168.1.10 nao pode ser removido')
+                                print('Master IP pode ser removido')
                                 send_message(web_socket, 'text/plain', str.encode('ip_master_plus'))
+                        else:
+                            print('O IP PASSADO NAO ESTA LISTA, LOGO, NAO PODE SER REMOVIDO')
+                            send_message(web_socket, 'text/plain', str.encode('ip_not_provided'))
                     else:
                         print('ERRO: IP REMOVIDO CAIU NA VERIFICACAO DE REGEX')
                         send_message(web_socket, 'text/plain', str.encode('regex_failure'))
